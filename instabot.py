@@ -34,6 +34,7 @@ def owner_info():
         print "Bio                      :", info_of_owner["data"]["bio"]
     success_or_failure(info_of_owner)
 
+
 owner_info()
 
 
@@ -112,20 +113,18 @@ def like_user_post(username, option, selection):
     like = requests.post(like_post_url, payload).json()
     success_or_failure(like)
 
-like_user_post("api_17790",0,1)
+
+like_user_post("api_17790", 0, 1)
 
 
+# The function below creates a comment on a media object using 'post'.
+def post_comment(username, option, selection):
+    media_id = get_post_by_choice(username, option,
+                                  selection)  # get_user_post_id(username) function called here to get post ID
+    url_post_comment = BASE_URL + "media/" + media_id + "/comments"
+    input_comment = raw_input("Write a comment you want to post.\n")
+    request_data = {"access_token": APP_ACCESS_TOKEN, 'text': input_comment}  # Required to created a comment.
+    comment = requests.post(url_post_comment, request_data).json()
+    success_or_failure(comment)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+post_comment("api_17790", 0, 1)
