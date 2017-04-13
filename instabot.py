@@ -1,3 +1,4 @@
+# Here we imported Requests library to make network requests
 import requests
 
 # Instagram API Access_token of the owner << used in the scope of basic, public_content, likes ,comments >>
@@ -18,14 +19,41 @@ def owner_info():
     print "Follows                  :", info_of_owner["data"]["counts"]["follows"]
     print "Followed by              :", info_of_owner["data"]["counts"]["followed_by"]
     print "Link to profile picture  :", info_of_owner["data"]["profile_picture"]
-    if info_of_owner['data']['website'] != "":  # If Bio of the owner is mentioned
+    if info_of_owner['data']['website'] != "":  # If Website of the owner is mentioned
         print "Website                  :", info_of_owner["data"]["website"]
-    if info_of_owner['data']['bio'] != '':
+    if info_of_owner['data']['bio'] != '':  # If Bio of the owner is mentioned
         print "Bio                      :", info_of_owner["data"]["bio"]
     print "\n************************************************************************************************"
     if info_of_owner['meta']['code'] == 200:
-        print "\nInformation successfully displayed"
+        print "Your task was successfully performed."
     else:
-        print "\nYou faced an error in getting the information.\nTry again later!"
+        print "Sorry!!!\nYou faced an error while performing your task.\nTry again later!"
+    print "\n************************************************************************************************"
+
 
 owner_info()
+
+
+# The function below gets the information about the User.
+def display_user_info(username):
+    request_user_url = BASE_URL + "users/search?q=" + username + "&access_token=" + APP_ACCESS_TOKEN
+    user_info = requests.get(request_user_url).json()  # GET call to search user for the informaion
+    print "**************************************| User Information |**************************************"
+    print "\nFull Name                :", user_info["data"][0]["full_name"]
+    print "UserName                 :", user_info["data"][0]["username"]
+    print "User Id                  :", user_info["data"][0]["id"]
+    print "\n************************************************************************************************"
+
+
+display_user_info("api_17790")
+
+
+# The function below gets the information about the User and return user's ID using 'GET'.
+def get_user_info(insta_username):
+    request_user_url = BASE_URL + "users/search?q=" + insta_username + "&access_token=" + APP_ACCESS_TOKEN
+    user_info = requests.get(request_user_url).json()  # GET call to search user for the information
+    user_id = user_info["data"][0]["id"]
+    return user_id  # To Return user's id
+
+a=get_user_info("api_17790")
+print a
