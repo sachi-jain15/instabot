@@ -202,47 +202,60 @@ def main_function():
     print "\n**************************************| OWN DETAILS |*******************************************"
     owner_info()
     print "************************************************************************************************"
-    users_list = ['api_17790', 'kamal_kashyap13', 'shivtaj21', 'bot_demo']  # List of your sandbox users
-    to_print_list = [n for n in users_list[0:len(users_list)]] # To print entire list
-    print "Please enter a username from below : "
-    print " , ".join(to_print_list)  # To represent list with commas
-    user_name = raw_input("\n")
-    if user_name not in users_list:  # If user not found in the list
-        print "Invalid username"
-    else:
-        print "**************************************| USER'S DETAILS |****************************************"
-        display_user_info(user_name)
-        print "************************************************************************************************"
-        print "What would you like to do further :?\nPress 1 to Like a post\nPress 2 to Comment on a post"
-        print "Press 3 to search a word in the comment in the post of your choice"
-        print("Press 4 to delete the 1st comment containing a particular word.")
-        print("Press 5 Get the average number of words per comment in post of your choice.")
-        option = int(raw_input("Your option: "))
-        print "************************************************************************************************"
-        if option not in range(1,6):
-            print"Invalid operation \nPlease try again!"
+    choice = 'yes'
+    while choice!= 'no':
+        users_list = ['api_17790', 'kamal_kashyap13', 'shivtaj21', 'bot_demo']  # List of your sandbox users
+        to_print_list = [n for n in users_list[0:len(users_list)]] # To print entire list
+        print "Please enter a username from below : "
+        print " , ".join(to_print_list)  # To represent list with commas
+        user_name = raw_input("\n")
+        if user_name not in users_list:  # If user not found in the list
+            print "Invalid username"
         else:
-            print "Which post you would wish to choose :"
-            print "press 1 for the one with the least number of it"
-            print "press 2 for the one which has been recently uploaded "
-            print "press 3 for the one which is the most popular"
-            post_select = int(raw_input("Your option: "))
-            if post_select not in [1, 2, 3]:
-                print"Invalid post chosen \nYour operation will be done on most recent post then"
+            print "**************************************| USER'S DETAILS |****************************************"
+            display_user_info(user_name)
+            print "************************************************************************************************"
+            print "What would you like to do further :?\nPress 1 to Like a post\nPress 2 to Comment on a post"
+            print "Press 3 to search a word in the comment in the post of your choice"
+            print("Press 4 to delete the 1st comment containing a particular word.")
+            print("Press 5 Get the average number of words per comment in post of your choice.")
+            option = int(raw_input("Your option: "))
+            print "************************************************************************************************"
+            if option not in range(1,6):
+                print"Invalid operation \nPlease try again!"
             else:
-                if option == 1:
-                        like_user_post(user_name, option, post_select)
-                if option == 2:
-                    post_comment(user_name, option, post_select)
-                if option == 3:
-                    word_search_in_comment(user_name, option, post_select)
-                if option == 4:
-                    delete_comment(user_name, option, post_select)
-                if option == 5:
-                    average_words_per_comment(user_name, option, post_select)
-        print "************************************************************************************************"
+                print "Which post you would wish to choose :"
+                print "press 1 for the one with the least number of it"
+                print "press 2 for the one which has been recently uploaded "
+                print "press 3 for the one which is the most popular"
+                post_select = int(raw_input("Your option: "))
+                if post_select not in [1, 2, 3]:
+                    print"Invalid post chosen \nYour operation will be done on most recent post then"
+                else:
+                    if option == 1:
+                            like_user_post(user_name, option, post_select)
+                    if option == 2:
+                        post_comment(user_name, option, post_select)
+                    if option == 3:
+                        word_search_in_comment(user_name, option, post_select)
+                    if option == 4:
+                        delete_comment(user_name, option, post_select)
+                    if option == 5:
+                        average_words_per_comment(user_name, option, post_select)
+            print "************************************************************************************************"
+            print "Do you want to continue?? (yes/no)"
+            opt = raw_input().lower()
+            if opt == 'yes' or opt == 'y':
+                choice = 'yes'
+                pass
+            elif opt == 'no' or opt == 'n':
+                choice = 'no'
+            else:
+                print "Invalid choice \n"
+                print "The program is terminating..."
+                break
     print "________________________________________________________________________________________________"
     print("**************************************| THANK YOU |*********************************************")
-# THE END
+    # THE END
 
 main_function()  # Main function called here.
