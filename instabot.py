@@ -148,16 +148,43 @@ def word_search_in_comment(username, option, selection):
     comments_id_matched = []
     comments_matched = []
     user_found = []
-    for each_item in range(len(comments_list)):
+    for each_item in range(len(comments_list)): # Loop to look for the comment that contains the specified word
         if word_search in comments_list[each_item]:
             comments_matched.append(comments_list[each_item])
             comments_id_matched.append(comments_id[each_item])
             user_found.append(user_name[each_item])
-    if len(comments_matched) == 0:
+    if len(comments_matched) == 0: # No comment Found
         print "No comment have " + word_search + " word"
-        return False,media_id, False, False
+        return False,media_id, False
     else:
         print "Following are the comments that contains the " + word_search + " word:"
         for i in range(len(comments_matched)):
             print("-->  " + comments_matched[i])
-        return comments_id_matched, media_id, comments_matched, user_found
+        return comments_id_matched, media_id, comments_matched
+
+word_search_in_comment("api_17790", 0, 1)
+
+# Function to Delete the 1st comment found having a Particular Word.
+def delete_comment(username, option, selection):
+    user_id = get_post_by_choice(username, option, selection)
+    comments_id_matched, media_id, comments_matched = word_search_in_comment(username,option,selection)
+    word_to_be_searched = raw_input("Re-Enter the word you searched for so as to delete the comment containing it: ")
+    if not comments_id_matched:
+        return False
+    else:
+        for each_item in range(len(comments_id_matched)):
+            url = BASE_URL+"media/"+str(media_id)+"/comments/"+str(comments_id_matched[each_item])+"/?access_token="+APP_ACCESS_TOKEN
+            info_to_delete = requests.delete(url).json()
+            print "\n************************************************************************************************"
+            if info_to_delete['meta']['code'] == 200:
+                print "\""+comments_matched[each_item]+ "\" --> deleted"
+                print "Your task was successfully performed."
+                break
+            elif info_to_delete['meta']['error_message'] == "You cannot delete this comment":
+                print comments_matched[each_item]," = ",info_to_delete['meta']['error_message']
+            else:
+                print "Sorry!!!\nYou faced an error while performing your task.\nTry again later!"
+            print "\n************************************************************************************************"
+
+delete_comment("api_17790", 0, 1)
+
