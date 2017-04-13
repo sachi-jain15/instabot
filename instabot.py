@@ -14,7 +14,6 @@ def success_or_failure(data):
         print "Your task was successfully performed."
     else:
         print "Sorry!!!\nYou faced an error while performing your task.\nTry again later!"
-    print "\n************************************************************************************************"
 
 
 # The function below gets the information about the owner of the access_token() using 'GET'.
@@ -33,18 +32,15 @@ def owner_info():
         print "Website                  :", info_of_owner["data"]["website"]
     if info_of_owner['data']['bio'] != '':  # If Bio of the owner is mentioned
         print "Bio                      :", info_of_owner["data"]["bio"]
-    success_or_failure(info_of_owner)  # To check whether we have succeeded or not.
 
 
 # The function below gets the information about the User.
 def display_user_info(username):
     request_user_url = BASE_URL + "users/search?q=" + username + "&access_token=" + APP_ACCESS_TOKEN
     user_info = requests.get(request_user_url).json()  # GET call to search user for the informaion
-    print "**************************************| User Information |**************************************"
     print "\nFull Name                :", user_info["data"][0]["full_name"]
     print "UserName                 :", user_info["data"][0]["username"]
     print "User Id                  :", user_info["data"][0]["id"]
-    print "\n************************************************************************************************"
 
 
 # The function below gets the information about the User and return user's ID using 'GET'.
@@ -171,7 +167,6 @@ def delete_comment(username, option, selection):
                 print comments_matched[each_item], " = ", info_to_delete['meta']['error_message']
             else:
                 print "Sorry!!!\nYou faced an error while performing your task.\nTry again later!"
-    print "\n************************************************************************************************"
 
 
 # Function to find Average Number of Words per Comment
@@ -193,6 +188,63 @@ def average_words_per_comment(username, option, selection):
             comments_id.append(comment['id'])
         average_words = float(word_count) / len(list_of_comments)
         print "\nAverage number of words per comment in post = %.2f" % average_words
-    print "\n************************************************************************************************"
 
-average_words_per_comment("api_17790", 0, 1)
+
+def main_function():
+    print "**************************| _/\_ WELCOME TO INSTABOT SERVICES _/\_ |****************************"
+    print "________________________________________________________________________________________________"
+    print "\n**************************************| OWN DETAILS |*******************************************"
+    owner_info()
+    print "************************************************************************************************"
+    users_list = ['api_17790', 'kamal_kashyap13', 'shivtaj21', 'bot_demo']
+    to_print_list = [n for n in users_list[0:len(users_list)]]
+    print "Please enter a username from below : "
+    print " , ".join(to_print_list)
+    user_name = raw_input("\n")
+    if user_name not in users_list:  # If user not found
+        print "Invalid username"
+    else:
+        print "**************************************| USER'S DETAILS |****************************************"
+        display_user_info(user_name)
+        print "************************************************************************************************"
+        print "What would you like to do further :?\nPress 1 to Like a post\nPress 2 to Comment on a post"
+        print "Press 3 to search a word in the comment in the post of your choice"
+        print("Press 4 to delete the 1st comment containing a particular word.")
+        print("Press 5 Get the average number of words per comment in post of your choice.")
+        option = int(raw_input("Your option: "))
+        print "************************************************************************************************"
+        if option not in range(1,6):
+            print"Invalid operation \nPlease try again!"
+        else:
+            print "Which post you would wish to choose :"
+            print "press 1 for the one with the least number of it"
+            print "press 2 for the one which has been recently uploaded "
+            print "press 3 for the one which is the most popular"
+            post_select = int(raw_input("Your option: "))
+            if post_select not in [1, 2, 3]:
+                print"Invalid post chosen \nYour operation will be done on most recent post then"
+            else:
+                if option == 1:
+                        like_user_post(user_name, option, post_select)
+                if option == 2:
+                    post_comment(user_name, option, post_select)
+                if option == 3:
+                    word_search_in_comment(user_name, option, post_select)
+                if option == 4:
+                    delete_comment(user_name, option, post_select)
+                if option == 5:
+                    average_words_per_comment(user_name, option, post_select)
+        print "************************************************************************************************"
+    print("\nWant to continue using Instabot ? ")
+#    opt = input("\nEnter your choice (Y/N) :").upper()
+ #   if opt not in ['Y','N']:
+  #      print("You have Entered a Wrong Choice. Try Again...")
+   # choice = opt
+    #if choice == 'N':
+    #    break
+    #else:
+     #   pass
+    # Terminates the Program by Printing a Message.
+    print "________________________________________________________________________________________________"
+    print("**************************************| THANK YOU |*********************************************")
+main_function()
