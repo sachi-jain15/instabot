@@ -6,6 +6,7 @@ APP_ACCESS_TOKEN = '1598029108.a88c6e0.b2a4559815d640e7be0299013d01a1a8'
 # Base URL common for all the requests in the file.
 BASE_URL = 'https://api.instagram.com/v1/'
 
+
 # Function below is to check whether we have succeeded or not.
 def success_or_failure(data):
     print "\n************************************************************************************************"
@@ -32,10 +33,7 @@ def owner_info():
         print "Website                  :", info_of_owner["data"]["website"]
     if info_of_owner['data']['bio'] != '':  # If Bio of the owner is mentioned
         print "Bio                      :", info_of_owner["data"]["bio"]
-    success_or_failure(info_of_owner) # To check whether we have succeeded or not.
-
-
-owner_info()
+    success_or_failure(info_of_owner)  # To check whether we have succeeded or not.
 
 
 # The function below gets the information about the User.
@@ -49,18 +47,12 @@ def display_user_info(username):
     print "\n************************************************************************************************"
 
 
-display_user_info("api_17790")
-
-
 # The function below gets the information about the User and return user's ID using 'GET'.
 def get_user_id(username):
     request_user_url = BASE_URL + "users/search?q=" + username + "&access_token=" + APP_ACCESS_TOKEN
     user_info = requests.get(request_user_url).json()  # GET call to search user for the information
     user_id = user_info["data"][0]["id"]
     return user_id  # To Return user's id
-
-
-get_user_id("api_17790")
 
 
 # The function below fetches public post starting from the most recent one published by the user using 'GET'.
@@ -111,10 +103,7 @@ def like_user_post(username, option, selection):
     payload = {'access_token': APP_ACCESS_TOKEN}
     like_post_url = BASE_URL + "media/" + post_id + "/likes"
     like = requests.post(like_post_url, payload).json()  # Post call to like the post
-    success_or_failure(like) # To check whether we have succeeded or not.
-
-
-like_user_post("api_17790", 0, 1)
+    success_or_failure(like)  # To check whether we have succeeded or not.
 
 
 # The function below creates a comment on a media object using 'post'.
@@ -125,15 +114,13 @@ def post_comment(username, option, selection):
     input_comment = raw_input("Write a comment you want to post.\n")
     request_data = {"access_token": APP_ACCESS_TOKEN, 'text': input_comment}  # Required to created a comment.
     comment = requests.post(url_post_comment, request_data).json()  # Post call to comment the post
-    success_or_failure(comment) # To check whether we have succeeded or not.
-
-
-post_comment("api_17790", 0, 1)
+    success_or_failure(comment)  # To check whether we have succeeded or not.
 
 
 # The Function returns comment Id that contains a particular word in a particular post
 def word_search_in_comment(username, option, selection):
-    media_id = get_post_by_choice(username, option, selection)  # get_user_post_id(username) function called here to get post ID
+    media_id = get_post_by_choice(username, option,
+                                  selection)  # get_user_post_id(username) function called here to get post ID
     url_post_comment = BASE_URL + "media/" + media_id + "/comments?access_token=" + APP_ACCESS_TOKEN
     various_comments = requests.get(url_post_comment).json()
     word_search = raw_input("Enter a word you want to search in the comments")
@@ -148,43 +135,64 @@ def word_search_in_comment(username, option, selection):
     comments_id_matched = []
     comments_matched = []
     user_found = []
-    for each_item in range(len(comments_list)): # Loop to look for the comment that contains the specified word
+    for each_item in range(len(comments_list)):  # Loop to look for the comment that contains the specified word
         if word_search in comments_list[each_item]:
             comments_matched.append(comments_list[each_item])
             comments_id_matched.append(comments_id[each_item])
             user_found.append(user_name[each_item])
-    if len(comments_matched) == 0: # No comment Found
+    if len(comments_matched) == 0:  # No comment Found
         print "No comment have " + word_search + " word"
-        return False,media_id, False
+        return False, media_id, False
     else:
         print "Following are the comments that contains the " + word_search + " word:"
         for i in range(len(comments_matched)):
             print("-->  " + comments_matched[i])
         return comments_id_matched, media_id, comments_matched
 
-word_search_in_comment("api_17790", 0, 1)
 
 # Function to Delete the 1st comment found having a Particular Word.
 def delete_comment(username, option, selection):
     user_id = get_post_by_choice(username, option, selection)
-    comments_id_matched, media_id, comments_matched = word_search_in_comment(username,option,selection)
+    comments_id_matched, media_id, comments_matched = word_search_in_comment(username, option, selection)
     word_to_be_searched = raw_input("Re-Enter the word you searched for so as to delete the comment containing it: ")
     if not comments_id_matched:
         return False
     else:
         for each_item in range(len(comments_id_matched)):
-            url = BASE_URL+"media/"+str(media_id)+"/comments/"+str(comments_id_matched[each_item])+"/?access_token="+APP_ACCESS_TOKEN
-            info_to_delete = requests.delete(url).json()
+            url = BASE_URL + "media/" + str(media_id) + "/comments/" + str(
+                comments_id_matched[each_item]) + "/?access_token=" + APP_ACCESS_TOKEN
+            info_to_delete = requests.delete(url).json()  # Delete call to delete comment.
             print "\n************************************************************************************************"
             if info_to_delete['meta']['code'] == 200:
-                print "\""+comments_matched[each_item]+ "\" --> deleted"
+                print "\"" + comments_matched[each_item] + "\" --> deleted"
                 print "Your task was successfully performed."
                 break
             elif info_to_delete['meta']['error_message'] == "You cannot delete this comment":
-                print comments_matched[each_item]," = ",info_to_delete['meta']['error_message']
+                print comments_matched[each_item], " = ", info_to_delete['meta']['error_message']
             else:
                 print "Sorry!!!\nYou faced an error while performing your task.\nTry again later!"
-            print "\n************************************************************************************************"
+    print "\n************************************************************************************************"
 
-delete_comment("api_17790", 0, 1)
 
+# Function to find Average Number of Words per Comment
+def average_words_per_comment(username, option, selection):
+    user_id = get_user_id(username)
+    post_id = get_post_by_choice(username, option, selection)
+    url = BASE_URL + "media/" + post_id + "/comments/?access_token=" + APP_ACCESS_TOKEN
+    fetch_info = requests.get(url).json()
+    print "\n************************************************************************************************"
+    if len(fetch_info['data']) == 0:
+        print("There is no comment on this post.")
+    else:
+        list_of_comments = []
+        word_count = 0
+        comments_id = []
+        for comment in fetch_info['data']:
+            list_of_comments.append(comment['text'])
+            word_count += len(comment['text'].split())
+            comments_id.append(comment['id'])
+        average_words = float(word_count) / len(list_of_comments)
+        print "\nAverage number of words per comment in post = %.2f" % average_words
+    print "\n************************************************************************************************"
+
+average_words_per_comment("api_17790", 0, 1)
