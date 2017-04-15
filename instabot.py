@@ -66,7 +66,7 @@ def get_user_post(username):
 
 # The function below chooses the post in a creative way
 # i.e the one with minimum/maximum no. likes/comments or most recent one.
-def get_post_by_choice(username, option=0, selection=0):
+def get_post_by_choice(username, option=0, selection=0, n=0):
     requested_post = get_user_post(username)  # This function is called here to get the user's post details.
     post_index = 0  # For most recent post
     like_list_on_each_post = []
@@ -75,7 +75,7 @@ def get_post_by_choice(username, option=0, selection=0):
     if total_user_media == 0:
         print("\nThis User has no post!")
     else:
-        if option == 1: # For liking a post
+        if option == 1:  # For liking a post
             for each_media in range(0, total_user_media):
                 like_list_on_each_post.append(requested_post['data'][each_media]['likes']['count'])
             if selection == 1:  # If we want least liked post to be liked
@@ -84,6 +84,8 @@ def get_post_by_choice(username, option=0, selection=0):
             if selection == 3:  # If we want most popular post to be liked
                 most_count = max(like_list_on_each_post)
                 post_index = like_list_on_each_post.index(most_count)
+            if selection == 4:  #For liking all the posts
+                post_index = n
         if option == 2:  # For commenting on a post
             for each_media in range(0, total_user_media):
                 comment_list_on_each_post.append(requested_post['data'][each_media]['comments']['count'])
@@ -99,10 +101,10 @@ def get_post_by_choice(username, option=0, selection=0):
 
 
 # The function below sets a like on a particular media by the currently authenticated user using 'post'.
-def like_user_post(username, option, selection):
-    post_id = get_post_by_choice(username, option, selection)  # get_user_post_id()function called here to get post ID
-    payload = {'access_token': APP_ACCESS_TOKEN}
+def like_user_post(username, option, selection, n):
+    post_id = get_post_by_choice(username, option, selection, n)  # get_user_post_id()function called here to get postID
     like_post_url = BASE_URL + "media/" + post_id + "/likes"
+    payload = {'access_token': APP_ACCESS_TOKEN}
     like = requests.post(like_post_url, payload).json()  # Post call to like the post
     success_or_failure(like)  # To check whether we have succeeded or not.
 
@@ -191,11 +193,11 @@ def average_words_per_comment(username, option, selection):
             list_of_comments.append(comment['text'])
             word_count += len(comment['text'].split())
             comments_id.append(comment['id'])
-        average_words = float(word_count) / len(list_of_comments) # Formula to calculate average
+        average_words = float(word_count) / len(list_of_comments)  # Formula to calculate average
         print "\nAverage number of words per comment in post = %.2f" % average_words
 
 
-#The main function to run the entire program...
+# The main function to run the entire program...
 def main_function():
     print "**************************| _/\_ WELCOME TO INSTABOT SERVICES _/\_ |****************************"
     print "________________________________________________________________________________________________"
@@ -203,9 +205,9 @@ def main_function():
     owner_info()
     print "************************************************************************************************"
     choice = 'yes'
-    while choice!= 'no':
-        users_list = ['api_17790', 'kamal_kashyap13', 'shivtaj21', 'bot_demo']  # List of your sandbox users
-        to_print_list = [n for n in users_list[0:len(users_list)]] # To print entire list
+    while choice != 'no':
+        users_list = ['kamal_kashyap13', 'shivtaj21', 'bot_demo','api_17790']  # List of your sandbox users
+        to_print_list = [n for n in users_list[0:len(users_list)]]  # To print entire list
         print "Please enter a username from below : "
         print " , ".join(to_print_list)  # To represent list with commas
         user_name = raw_input("\n")
@@ -221,27 +223,39 @@ def main_function():
             print("Press 5 Get the average number of words per comment in post of your choice.")
             option = int(raw_input("Your option: "))
             print "************************************************************************************************"
-            if option not in range(1,6):
+            if option not in range(1, 6):
                 print"Invalid operation \nPlease try again!"
             else:
                 print "Which post you would wish to choose :"
                 print "press 1 for the one with the least number of it"
                 print "press 2 for the one which has been recently uploaded "
                 print "press 3 for the one which is the most popular"
+                if option == 1:
+                    print "press 4 to like all post"
                 post_select = int(raw_input("Your option: "))
-                if post_select not in [1, 2, 3]:
-                    print"Invalid post chosen \nYour operation will be done on most recent post then"
+                if option == 1:
+                    if post_select in [1, 2, 3]:
+                        like_user_post(user_name, option, post_select, 0)
+                    elif post_select == 4:
+                        store = get_user_post(user_name)
+                        length = len(store['data'])
+                        for post in range(0, length):
+                            n = post
+                            like_user_post(user_name, option, 4, n)  # Here n is to give the post number.
+                    else:
+                        print"Invalid post chosen \nYour operation will be done on most recent post then"
                 else:
-                    if option == 1:
-                            like_user_post(user_name, option, post_select)
-                    if option == 2:
-                        post_comment(user_name, option, post_select)
-                    if option == 3:
-                        word_search_in_comment(user_name, option, post_select)
-                    if option == 4:
-                        delete_comment(user_name, option, post_select)
-                    if option == 5:
-                        average_words_per_comment(user_name, option, post_select)
+                    if post_select not in [1, 2, 3]:
+                        print"Invalid post chosen \n"
+                    else:
+                        if option == 2:
+                            post_comment(user_name, option, post_select)
+                        if option == 3:
+                            word_search_in_comment(user_name, option, post_select)
+                        if option == 4:
+                            delete_comment(user_name, option, post_select)
+                        if option == 5:
+                            average_words_per_comment(user_name, option, post_select)
             print "************************************************************************************************"
             print "Do you want to continue?? (yes/no)"
             opt = raw_input().lower()
@@ -257,5 +271,6 @@ def main_function():
     print "________________________________________________________________________________________________"
     print("**************************************| THANK YOU |*********************************************")
     # THE END
+
 
 main_function()  # Main function called here.
